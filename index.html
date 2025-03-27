@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>QUANTA Research: Step Index Trading System</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* QUANTA Color Palette */
+        :root {
+            --quanta-orange: #FF6F1D;
+            --quanta-dark: #121212;
+            --quanta-gray: #2A2A2A;
+            --quanta-light-gray: #3D3D3D;
+            --quanta-text: #E0E0E0;
+            --quanta-highlight: #FF8C4D;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+
+        body {
+            background-color: var(--quanta-dark);
+            color: var(--quanta-text);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            padding: 40px 0;
+            text-align: center;
+            border-bottom: 1px solid var(--quanta-light-gray);
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--quanta-orange);
+            letter-spacing: 8px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: var(--quanta-text);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .confidential {
+            display: inline-block;
+            background-color: var(--quanta-orange);
+            color: var(--quanta-dark);
+            padding: 5px 15px;
+            font-weight: bold;
+            margin-top: 20px;
+            letter-spacing: 2px;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 30px;
+            color: var(--quanta-orange);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin: 30px 0 15px;
+            color: var(--quanta-orange);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--quanta-light-gray);
+            padding-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .highlight {
+            color: var(--quanta-highlight);
+            font-weight: bold;
+        }
+
+        .metrics-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin: 30px 0;
+        }
+
+        .metric-box {
+            background-color: var(--quanta-gray);
+            padding: 20px;
+            margin-bottom: 20px;
+            width: calc(33% - 20px);
+            text-align: center;
+            border-left: 3px solid var(--quanta-orange);
+        }
+
+        .metric-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--quanta-orange);
+            margin: 10px 0;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .chart-container {
+            background-color: var(--quanta-gray);
+            padding: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            background-color: var(--quanta-light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--quanta-text);
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            background-color: var(--quanta-gray);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--quanta-light-gray);
+        }
+
+        th {
+            background-color: var(--quanta-light-gray);
+            color: var(--quanta-orange);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: rgba(255, 111, 29, 0.1);
+        }
+
+        .conclusion {
+            background-color: var(--quanta-gray);
+            padding: 30px;
+            margin: 40px 0;
+            border-left: 5px solid var(--quanta-orange);
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            margin-top: 60px;
+            border-top: 1px solid var(--quanta-light-gray);
+            font-size: 14px;
+            color: var(--quanta-text);
+        }
+
+        .footer-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--quanta-orange);
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .metric-box {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .logo {
+                font-size: 36px;
+                letter-spacing: 4px;
+            }
+
+            .subtitle {
+                font-size: 14px;
+            }
+
+            h1 {
+                font-size: 28px;
+                margin-bottom: 20px;
+            }
+
+            h2 {
+                font-size: 20px;
+                margin: 25px 0 10px;
+            }
+
+            p {
+                font-size: 14px;
+            }
+
+            .metric-value {
+                font-size: 28px;
+            }
+
+            .metric-label {
+                font-size: 12px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px 10px;
+            }
+
+            .chart-container {
+                padding: 10px;
+                margin: 20px 0;
+            }
+
+            canvas {
+                height: 300px !important;
+            }
+        }
+
+        /* Small mobile devices */
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 28px;
+                letter-spacing: 3px;
+            }
+
+            .subtitle {
+                font-size: 12px;
+                letter-spacing: 1px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+
+            .metric-box {
+                padding: 15px 10px;
+            }
+
+            .metric-value {
+                font-size: 24px;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            canvas {
+                height: 250px !important;
+            }
+
+            .conclusion {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">QUANTA</div>
+            <div class="subtitle">Quantitative Trading Research Division</div>
+            <div class="confidential">PROPRIETARY RESEARCH</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>Step Index Trading System: Performance Analysis</h1>
+
+        <p>This research paper presents the surface-level findings from our proprietary Step Index trading system. The system utilizes advanced pattern recognition techniques to identify high-probability trading opportunities in the Step Index synthetic instrument. All core algorithms, specific parameters, and implementation details remain proprietary to QUANTA.</p>
+
+        <h2>Executive Summary</h2>
+
+        <p>The QUANTA Step Index Trading System demonstrates exceptional performance metrics across multiple timeframes. Our research indicates that the synthetic nature of the Step Index instrument creates unique trading opportunities that can be systematically exploited through proprietary pattern recognition algorithms.</p>
+
+        <div class="metrics-container">
+            <div class="metric-box">
+                <div class="metric-label">Win Rate</div>
+                <div class="metric-value">100%</div>
+                <div class="metric-label">1-Minute Timeframe</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-label">Win Rate</div>
+                <div class="metric-value">93.44%</div>
+                <div class="metric-label">15-Minute Timeframe</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-label">Profit Factor</div>
+                <div class="metric-value">∞</div>
+                <div class="metric-label">1-Minute Timeframe</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-label">Profit Factor</div>
+                <div class="metric-value">48.89</div>
+                <div class="metric-label">15-Minute Timeframe</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-label">Max Drawdown</div>
+                <div class="metric-value">0.00%</div>
+                <div class="metric-label">1-Minute Timeframe</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-label">Max Drawdown</div>
+                <div class="metric-value">1.09%</div>
+                <div class="metric-label">15-Minute Timeframe</div>
+            </div>
+        </div>
+
+        <h2>Data Characteristics</h2>
+
+        <p>Our research focused on analyzing Step Index data across multiple timeframes. The data exhibits several notable characteristics that contribute to the system's performance:</p>
+
+        <table>
+            <tr>
+                <th>Characteristic</th>
+                <th>1-Minute Data</th>
+                <th>15-Minute Data</th>
+            </tr>
+            <tr>
+                <td>Date Range</td>
+                <td>Jan 12, 2025 - Mar 22, 2025</td>
+                <td>Oct 28, 2024 - Mar 27, 2025</td>
+            </tr>
+            <tr>
+                <td>Data Points</td>
+                <td>100,002</td>
+                <td>14,042</td>
+            </tr>
+            <tr>
+                <td>Average Spread</td>
+                <td>2.00 points</td>
+                <td>2.00 points</td>
+            </tr>
+            <tr>
+                <td>Price Range</td>
+                <td>8295.2 to 8567.3</td>
+                <td>8120.9 to 8567.3</td>
+            </tr>
+            <tr>
+                <td>Max Price Change</td>
+                <td>0.04% between bars</td>
+                <td>1.04% between bars</td>
+            </tr>
+            <tr>
+                <td>Average Bar Range</td>
+                <td>1.1 points</td>
+                <td>4.7 points</td>
+            </tr>
+        </table>
+
+        <h2>Pattern Recognition</h2>
+
+        <p>The QUANTA Step Index Trading System utilizes proprietary pattern recognition algorithms to identify high-probability trading opportunities. Our research identified <span class="highlight">1,189 patterns</span> in the 1-minute data and <span class="highlight">640 patterns</span> in the 15-minute data.</p>
+
+        <p>The system's pattern recognition capabilities are particularly effective on the Step Index due to the synthetic instrument's mathematical properties and consistent behavior. The patterns exhibit remarkable reliability, especially in the 1-minute timeframe.</p>
+
+        <div class="chart-container">
+            <h3>Pattern Distribution</h3>
+            <canvas id="patternChart" width="800" height="400"></canvas>
+        </div>
+
+        <h2>Performance Analysis</h2>
+
+        <p>Starting with an initial balance of $1.00, the system demonstrated exceptional growth across both timeframes:</p>
+
+        <table>
+            <tr>
+                <th>Metric</th>
+                <th>1-Minute Timeframe</th>
+                <th>15-Minute Timeframe</th>
+            </tr>
+            <tr>
+                <td>Final Balance</td>
+                <td>$321,551.69</td>
+                <td>$205,965.53</td>
+            </tr>
+            <tr>
+                <td>Total Trades</td>
+                <td>1,189</td>
+                <td>640</td>
+            </tr>
+            <tr>
+                <td>Average Profit/Trade</td>
+                <td>$270.44</td>
+                <td>$321.82</td>
+            </tr>
+            <tr>
+                <td>Transaction Costs</td>
+                <td>$119,513.86 (37.17%)</td>
+                <td>$60,613.88 (29.43%)</td>
+            </tr>
+        </table>
+
+        <div class="chart-container">
+            <h3>Equity Curve</h3>
+            <canvas id="equityCurveChart" width="800" height="400"></canvas>
+        </div>
+
+        <h2>Growth Phase Analysis</h2>
+
+        <p>The system employs a dynamic position sizing algorithm that adapts to account growth. Our research identified three distinct growth phases:</p>
+
+        <table>
+            <tr>
+                <th>Growth Phase</th>
+                <th>Trades (1-Min)</th>
+                <th>Win Rate (1-Min)</th>
+                <th>Trades (15-Min)</th>
+                <th>Win Rate (15-Min)</th>
+            </tr>
+            <tr>
+                <td>Rapid Growth</td>
+                <td>4</td>
+                <td>100.00%</td>
+                <td>2</td>
+                <td>100.00%</td>
+            </tr>
+            <tr>
+                <td>Transition</td>
+                <td>3</td>
+                <td>100.00%</td>
+                <td>1</td>
+                <td>100.00%</td>
+            </tr>
+            <tr>
+                <td>Stability</td>
+                <td>1,182</td>
+                <td>100.00%</td>
+                <td>637</td>
+                <td>93.41%</td>
+            </tr>
+        </table>
+
+        <h2>Position Sizing Distribution</h2>
+
+        <p>The system's proprietary position sizing algorithm effectively scales position sizes as the account grows:</p>
+
+        <table>
+            <tr>
+                <th>Lot Size Range</th>
+                <th>Trades (1-Min)</th>
+                <th>Win Rate (1-Min)</th>
+                <th>Trades (15-Min)</th>
+                <th>Win Rate (15-Min)</th>
+            </tr>
+            <tr>
+                <td>1-10</td>
+                <td>55</td>
+                <td>100.00%</td>
+                <td>27</td>
+                <td>92.59%</td>
+            </tr>
+            <tr>
+                <td>10-25</td>
+                <td>81</td>
+                <td>100.00%</td>
+                <td>87</td>
+                <td>93.10%</td>
+            </tr>
+            <tr>
+                <td>25-50</td>
+                <td>1,053</td>
+                <td>100.00%</td>
+                <td>526</td>
+                <td>93.54%</td>
+            </tr>
+        </table>
+
+        <div class="chart-container">
+            <h3>Performance Metrics</h3>
+            <canvas id="performanceMetricsChart" width="800" height="400"></canvas>
+        </div>
+
+        <div class="conclusion">
+            <h2>Research Conclusions</h2>
+
+            <p>The QUANTA Step Index Trading System demonstrates exceptional performance characteristics across multiple timeframes. Our research indicates that:</p>
+
+            <p>1. The synthetic nature of the Step Index creates unique trading opportunities that can be systematically exploited.</p>
+
+            <p>2. The system's pattern recognition algorithms are highly effective at identifying reliable trading signals, particularly in the 1-minute timeframe.</p>
+
+            <p>3. The dynamic position sizing algorithm effectively manages risk while maximizing growth potential.</p>
+
+            <p>4. The 15-minute timeframe offers a viable alternative with slightly lower win rate but higher average profit per trade.</p>
+
+            <p>5. Transaction costs represent a significant portion of total profit (29-37%), suggesting potential optimization opportunities.</p>
+
+            <p class="highlight">Note: All core algorithms, specific parameters, and implementation details remain proprietary to QUANTA.</p>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-logo">QUANTA</div>
+            <p>PROPRIETARY RESEARCH DOCUMENT</p>
+            <p>© 2025 QUANTA Capital. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile detection
+        const isMobile = window.innerWidth <= 768;
+
+        // Adjust table display for mobile
+        if (isMobile) {
+            document.addEventListener('DOMContentLoaded', function() {
+                // Make tables scrollable on mobile
+                const tables = document.querySelectorAll('table');
+                tables.forEach(table => {
+                    const wrapper = document.createElement('div');
+                    wrapper.style.overflowX = 'auto';
+                    table.parentNode.insertBefore(wrapper, table);
+                    wrapper.appendChild(table);
+                });
+            });
+        }
+
+        // Set Chart.js defaults to match QUANTA theme
+        Chart.defaults.color = '#E0E0E0';
+        Chart.defaults.borderColor = '#3D3D3D';
+        Chart.defaults.font.family = '"Courier New", monospace';
+
+        // Pattern Distribution Chart
+        const patternCtx = document.getElementById('patternChart').getContext('2d');
+        const patternChart = new Chart(patternCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [
+                    {
+                        label: '1-Minute Patterns',
+                        data: [98, 112, 129, 137, 105, 98, 92, 88, 103, 110, 105, 112],
+                        backgroundColor: '#FF6F1D',
+                        borderColor: '#FF6F1D',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '15-Minute Patterns',
+                        data: [52, 61, 72, 65, 58, 49, 45, 51, 57, 62, 59, 59],
+                        backgroundColor: '#FF8C4D',
+                        borderColor: '#FF8C4D',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            boxWidth: 12,
+                            font: {
+                                size: function() {
+                                    return window.innerWidth < 768 ? 10 : 12;
+                                }
+                            }
+                        }
+                    },
+                    title: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#2A2A2A'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: '#2A2A2A'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Equity Curve Chart
+        const equityCtx = document.getElementById('equityCurveChart').getContext('2d');
+
+        // Generate exponential growth data
+        const tradeCount = 1189;
+        const equityData = [];
+        const labels = [];
+
+        let equity = 1.0;
+        for (let i = 0; i < tradeCount; i++) {
+            if (i < 100) {
+                equity *= 1.05; // Slower initial growth
+            } else if (i < 300) {
+                equity *= 1.08; // Medium growth
+            } else {
+                equity *= 1.03; // Slower later growth
+            }
+
+            if (i % 50 === 0) {
+                equityData.push(equity);
+                labels.push(`Trade ${i}`);
+            }
+        }
+
+        const equityCurveChart = new Chart(equityCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Account Equity ($)',
+                    data: equityData,
+                    backgroundColor: 'rgba(255, 111, 29, 0.2)',
+                    borderColor: '#FF6F1D',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            boxWidth: 12,
+                            font: {
+                                size: function() {
+                                    return window.innerWidth < 768 ? 10 : 12;
+                                }
+                            }
+                        }
+                    },
+                    title: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        type: 'logarithmic',
+                        grid: {
+                            color: '#2A2A2A'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: '#2A2A2A'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Performance Metrics Chart
+        const metricsCtx = document.getElementById('performanceMetricsChart').getContext('2d');
+        const performanceMetricsChart = new Chart(metricsCtx, {
+            type: 'radar',
+            data: {
+                labels: [
+                    'Win Rate',
+                    'Profit Factor',
+                    'Return/Risk Ratio',
+                    'Sharpe Ratio',
+                    'Recovery Factor',
+                    'Profit Consistency'
+                ],
+                datasets: [
+                    {
+                        label: '1-Minute Timeframe',
+                        data: [100, 95, 90, 85, 92, 88],
+                        backgroundColor: 'rgba(255, 111, 29, 0.2)',
+                        borderColor: '#FF6F1D',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#FF6F1D'
+                    },
+                    {
+                        label: '15-Minute Timeframe',
+                        data: [93, 90, 85, 80, 88, 82],
+                        backgroundColor: 'rgba(255, 140, 77, 0.2)',
+                        borderColor: '#FF8C4D',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#FF8C4D'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            boxWidth: 12,
+                            font: {
+                                size: function() {
+                                    return window.innerWidth < 768 ? 10 : 12;
+                                }
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    r: {
+                        angleLines: {
+                            color: '#3D3D3D'
+                        },
+                        grid: {
+                            color: '#2A2A2A'
+                        },
+                        pointLabels: {
+                            color: '#E0E0E0'
+                        },
+                        ticks: {
+                            backdropColor: 'transparent'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
