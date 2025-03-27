@@ -131,14 +131,6 @@
             padding: 20px;
             margin: 30px 0;
             text-align: center;
-            position: relative;
-            height: 400px;
-        }
-
-        canvas {
-            position: relative;
-            width: 100% !important;
-            height: 100% !important;
         }
 
         .chart-placeholder {
@@ -547,22 +539,53 @@
         // Mobile detection
         const isMobile = window.innerWidth <= 768;
 
-        // Improve scrolling performance
+        // Fix chart rendering issues
         document.addEventListener('DOMContentLoaded', function() {
-            // Add passive event listeners for better scroll performance
-            document.addEventListener('touchstart', function() {}, { passive: true });
-            document.addEventListener('touchmove', function() {}, { passive: true });
+            // Completely disable Chart.js animations
+            Chart.defaults.animation = false;
 
-            // Optimize chart rendering during scroll
-            let scrollTimeout;
-            window.addEventListener('scroll', function() {
-                if (scrollTimeout) {
-                    window.cancelAnimationFrame(scrollTimeout);
+            // Force hardware acceleration
+            const style = document.createElement('style');
+            style.textContent = `
+                .chart-container {
+                    transform: translateZ(0);
+                    backface-visibility: hidden;
+                    perspective: 1000px;
+                    will-change: transform;
+                    height: 400px;
+                    overflow: hidden;
                 }
+                canvas {
+                    transform: translateZ(0);
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                }
+            `;
+            document.head.appendChild(style);
 
-                scrollTimeout = window.requestAnimationFrame(function() {
-                    // This empty callback helps throttle rendering during scroll
-                });
+            // Prevent chart redrawing during scroll
+            let ticking = false;
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    window.requestAnimationFrame(function() {
+                        // Hide charts during scroll for better performance
+                        const charts = document.querySelectorAll('.chart-container');
+                        charts.forEach(chart => {
+                            const rect = chart.getBoundingClientRect();
+                            const isVisible =
+                                rect.top < window.innerHeight &&
+                                rect.bottom > 0;
+
+                            // Only render visible charts
+                            chart.style.visibility = isVisible ? 'visible' : 'hidden';
+                        });
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
             }, { passive: true });
         });
 
@@ -611,9 +634,7 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: {
-                    duration: 0 // Disable animations for smoother scrolling
-                },
+
                 plugins: {
                     legend: {
                         position: 'top',
@@ -688,9 +709,7 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: {
-                    duration: 0 // Disable animations for smoother scrolling
-                },
+
                 plugins: {
                     legend: {
                         position: 'top',
@@ -758,9 +777,7 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: {
-                    duration: 0 // Disable animations for smoother scrolling
-                },
+
                 plugins: {
                     legend: {
                         position: 'top',
