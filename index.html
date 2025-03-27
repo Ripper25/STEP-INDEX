@@ -293,6 +293,17 @@
     </style>
 </head>
 <body>
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="preloader-content">
+            <div class="preloader-logo">QUANTA</div>
+            <div class="preloader-bar">
+                <div class="preloader-progress"></div>
+            </div>
+            <div class="preloader-subtitle">QUANTITATIVE TRADING RESEARCH</div>
+        </div>
+    </div>
+
     <header>
         <div class="container">
             <div class="logo">QUANTA</div>
@@ -536,6 +547,24 @@
     </footer>
 
     <script>
+        // Preloader
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide preloader after 3 seconds
+            setTimeout(function() {
+                const preloader = document.getElementById('preloader');
+                preloader.classList.add('hidden');
+
+                // Enable scrolling on body
+                document.body.style.overflow = 'auto';
+
+                // Initialize charts after preloader is hidden
+                initCharts();
+            }, 3000);
+
+            // Disable scrolling while preloader is active
+            document.body.style.overflow = 'hidden';
+        });
+
         // Mobile detection
         const isMobile = window.innerWidth <= 768;
 
@@ -589,6 +618,211 @@
             }, { passive: true });
         });
 
+        // Initialize charts function
+        function initCharts() {
+            // Pattern Distribution Chart
+            const patternCtx = document.getElementById('patternChart').getContext('2d');
+            const patternChart = new Chart(patternCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [
+                        {
+                            label: '1-Minute Patterns',
+                            data: [98, 112, 129, 137, 105, 98, 92, 88, 103, 110, 105, 112],
+                            backgroundColor: '#FF6F1D',
+                            borderColor: '#FF6F1D',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '15-Minute Patterns',
+                            data: [52, 61, 72, 65, 58, 49, 45, 51, 57, 62, 59, 59],
+                            backgroundColor: '#FF8C4D',
+                            borderColor: '#FF8C4D',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                boxWidth: 12,
+                                font: {
+                                    size: function() {
+                                        return window.innerWidth < 768 ? 10 : 12;
+                                    }
+                                }
+                            }
+                        },
+                        title: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#2A2A2A'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: '#2A2A2A'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Equity Curve Chart
+            const equityCtx = document.getElementById('equityCurveChart').getContext('2d');
+
+            // Generate exponential growth data
+            const tradeCount = 1189;
+            const equityData = [];
+            const labels = [];
+
+            let equity = 100.0;
+            for (let i = 0; i < tradeCount; i++) {
+                if (i < 100) {
+                    equity *= 1.05; // Slower initial growth
+                } else if (i < 300) {
+                    equity *= 1.08; // Medium growth
+                } else {
+                    equity *= 1.03; // Slower later growth
+                }
+
+                if (i % 50 === 0) {
+                    equityData.push(equity);
+                    labels.push(`Trade ${i}`);
+                }
+            }
+
+            const equityCurveChart = new Chart(equityCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Account Equity ($)',
+                        data: equityData,
+                        backgroundColor: 'rgba(255, 111, 29, 0.2)',
+                        borderColor: '#FF6F1D',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                boxWidth: 12,
+                                font: {
+                                    size: function() {
+                                        return window.innerWidth < 768 ? 10 : 12;
+                                    }
+                                }
+                            }
+                        },
+                        title: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'logarithmic',
+                            grid: {
+                                color: '#2A2A2A'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: '#2A2A2A'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Performance Metrics Chart
+            const metricsCtx = document.getElementById('performanceMetricsChart').getContext('2d');
+            const performanceMetricsChart = new Chart(metricsCtx, {
+                type: 'radar',
+                data: {
+                    labels: [
+                        'Win Rate',
+                        'Profit Factor',
+                        'Return/Risk Ratio',
+                        'Sharpe Ratio',
+                        'Recovery Factor',
+                        'Profit Consistency'
+                    ],
+                    datasets: [
+                        {
+                            label: '1-Minute Timeframe',
+                            data: [99.92, 95, 90, 85, 92, 88],
+                            backgroundColor: 'rgba(255, 111, 29, 0.2)',
+                            borderColor: '#FF6F1D',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#FF6F1D'
+                        },
+                        {
+                            label: '15-Minute Timeframe',
+                            data: [93, 90, 85, 80, 88, 82],
+                            backgroundColor: 'rgba(255, 140, 77, 0.2)',
+                            borderColor: '#FF8C4D',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#FF8C4D'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                boxWidth: 12,
+                                font: {
+                                    size: function() {
+                                        return window.innerWidth < 768 ? 10 : 12;
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: '#3D3D3D'
+                            },
+                            grid: {
+                                color: '#2A2A2A'
+                            },
+                            pointLabels: {
+                                color: '#E0E0E0'
+                            },
+                            ticks: {
+                                backdropColor: 'transparent'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
         // Adjust table display for mobile
         if (isMobile) {
             document.addEventListener('DOMContentLoaded', function() {
@@ -607,208 +841,6 @@
         Chart.defaults.color = '#E0E0E0';
         Chart.defaults.borderColor = '#3D3D3D';
         Chart.defaults.font.family = '"Courier New", monospace';
-
-        // Pattern Distribution Chart
-        const patternCtx = document.getElementById('patternChart').getContext('2d');
-        const patternChart = new Chart(patternCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                datasets: [
-                    {
-                        label: '1-Minute Patterns',
-                        data: [98, 112, 129, 137, 105, 98, 92, 88, 103, 110, 105, 112],
-                        backgroundColor: '#FF6F1D',
-                        borderColor: '#FF6F1D',
-                        borderWidth: 1
-                    },
-                    {
-                        label: '15-Minute Patterns',
-                        data: [52, 61, 72, 65, 58, 49, 45, 51, 57, 62, 59, 59],
-                        backgroundColor: '#FF8C4D',
-                        borderColor: '#FF8C4D',
-                        borderWidth: 1
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            boxWidth: 12,
-                            font: {
-                                size: function() {
-                                    return window.innerWidth < 768 ? 10 : 12;
-                                }
-                            }
-                        }
-                    },
-                    title: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: '#2A2A2A'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            color: '#2A2A2A'
-                        }
-                    }
-                }
-            }
-        });
-
-        // Equity Curve Chart
-        const equityCtx = document.getElementById('equityCurveChart').getContext('2d');
-
-        // Generate exponential growth data
-        const tradeCount = 1189;
-        const equityData = [];
-        const labels = [];
-
-        let equity = 100.0;
-        for (let i = 0; i < tradeCount; i++) {
-            if (i < 100) {
-                equity *= 1.05; // Slower initial growth
-            } else if (i < 300) {
-                equity *= 1.08; // Medium growth
-            } else {
-                equity *= 1.03; // Slower later growth
-            }
-
-            if (i % 50 === 0) {
-                equityData.push(equity);
-                labels.push(`Trade ${i}`);
-            }
-        }
-
-        const equityCurveChart = new Chart(equityCtx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Account Equity ($)',
-                    data: equityData,
-                    backgroundColor: 'rgba(255, 111, 29, 0.2)',
-                    borderColor: '#FF6F1D',
-                    borderWidth: 2,
-                    pointRadius: 0,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            boxWidth: 12,
-                            font: {
-                                size: function() {
-                                    return window.innerWidth < 768 ? 10 : 12;
-                                }
-                            }
-                        }
-                    },
-                    title: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        type: 'logarithmic',
-                        grid: {
-                            color: '#2A2A2A'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            color: '#2A2A2A'
-                        }
-                    }
-                }
-            }
-        });
-
-        // Performance Metrics Chart
-        const metricsCtx = document.getElementById('performanceMetricsChart').getContext('2d');
-        const performanceMetricsChart = new Chart(metricsCtx, {
-            type: 'radar',
-            data: {
-                labels: [
-                    'Win Rate',
-                    'Profit Factor',
-                    'Return/Risk Ratio',
-                    'Sharpe Ratio',
-                    'Recovery Factor',
-                    'Profit Consistency'
-                ],
-                datasets: [
-                    {
-                        label: '1-Minute Timeframe',
-                        data: [99.92, 95, 90, 85, 92, 88],
-                        backgroundColor: 'rgba(255, 111, 29, 0.2)',
-                        borderColor: '#FF6F1D',
-                        borderWidth: 2,
-                        pointBackgroundColor: '#FF6F1D'
-                    },
-                    {
-                        label: '15-Minute Timeframe',
-                        data: [93, 90, 85, 80, 88, 82],
-                        backgroundColor: 'rgba(255, 140, 77, 0.2)',
-                        borderColor: '#FF8C4D',
-                        borderWidth: 2,
-                        pointBackgroundColor: '#FF8C4D'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            boxWidth: 12,
-                            font: {
-                                size: function() {
-                                    return window.innerWidth < 768 ? 10 : 12;
-                                }
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    r: {
-                        angleLines: {
-                            color: '#3D3D3D'
-                        },
-                        grid: {
-                            color: '#2A2A2A'
-                        },
-                        pointLabels: {
-                            color: '#E0E0E0'
-                        },
-                        ticks: {
-                            backdropColor: 'transparent'
-                        }
-                    }
-                }
-            }
-        });
     </script>
 </body>
 </html>
