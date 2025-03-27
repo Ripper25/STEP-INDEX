@@ -131,6 +131,14 @@
             padding: 20px;
             margin: 30px 0;
             text-align: center;
+            position: relative;
+            height: 400px;
+        }
+
+        canvas {
+            position: relative;
+            width: 100% !important;
+            height: 100% !important;
         }
 
         .chart-placeholder {
@@ -244,10 +252,7 @@
             .chart-container {
                 padding: 10px;
                 margin: 20px 0;
-            }
-
-            canvas {
-                height: 300px !important;
+                height: 300px;
             }
         }
 
@@ -285,8 +290,8 @@
                 white-space: nowrap;
             }
 
-            canvas {
-                height: 250px !important;
+            .chart-container {
+                height: 250px;
             }
 
             .conclusion {
@@ -542,6 +547,25 @@
         // Mobile detection
         const isMobile = window.innerWidth <= 768;
 
+        // Improve scrolling performance
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add passive event listeners for better scroll performance
+            document.addEventListener('touchstart', function() {}, { passive: true });
+            document.addEventListener('touchmove', function() {}, { passive: true });
+
+            // Optimize chart rendering during scroll
+            let scrollTimeout;
+            window.addEventListener('scroll', function() {
+                if (scrollTimeout) {
+                    window.cancelAnimationFrame(scrollTimeout);
+                }
+
+                scrollTimeout = window.requestAnimationFrame(function() {
+                    // This empty callback helps throttle rendering during scroll
+                });
+            }, { passive: true });
+        });
+
         // Adjust table display for mobile
         if (isMobile) {
             document.addEventListener('DOMContentLoaded', function() {
@@ -587,6 +611,9 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                animation: {
+                    duration: 0 // Disable animations for smoother scrolling
+                },
                 plugins: {
                     legend: {
                         position: 'top',
@@ -661,6 +688,9 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                animation: {
+                    duration: 0 // Disable animations for smoother scrolling
+                },
                 plugins: {
                     legend: {
                         position: 'top',
@@ -728,6 +758,9 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                animation: {
+                    duration: 0 // Disable animations for smoother scrolling
+                },
                 plugins: {
                     legend: {
                         position: 'top',
