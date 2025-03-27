@@ -316,7 +316,7 @@
         <div class="metrics-container">
             <div class="metric-box">
                 <div class="metric-label">Win Rate</div>
-                <div class="metric-value">100%</div>
+                <div class="metric-value">99.92%</div>
                 <div class="metric-label">1-Minute Timeframe</div>
             </div>
             <div class="metric-box">
@@ -326,7 +326,7 @@
             </div>
             <div class="metric-box">
                 <div class="metric-label">Profit Factor</div>
-                <div class="metric-value">∞</div>
+                <div class="metric-value">446,038</div>
                 <div class="metric-label">1-Minute Timeframe</div>
             </div>
             <div class="metric-box">
@@ -336,7 +336,7 @@
             </div>
             <div class="metric-box">
                 <div class="metric-label">Max Drawdown</div>
-                <div class="metric-value">0.00%</div>
+                <div class="metric-value">0.73%</div>
                 <div class="metric-label">1-Minute Timeframe</div>
             </div>
             <div class="metric-box">
@@ -401,7 +401,7 @@
 
         <h2>Performance Analysis</h2>
 
-        <p>Starting with an initial balance of $1.00, the system demonstrated exceptional growth across both timeframes:</p>
+        <p>Starting with an initial balance of $100.00, the system demonstrated exceptional growth across both timeframes:</p>
 
         <table>
             <tr>
@@ -411,7 +411,7 @@
             </tr>
             <tr>
                 <td>Final Balance</td>
-                <td>$321,551.69</td>
+                <td>$330,167.85</td>
                 <td>$205,965.53</td>
             </tr>
             <tr>
@@ -421,12 +421,12 @@
             </tr>
             <tr>
                 <td>Average Profit/Trade</td>
-                <td>$270.44</td>
+                <td>$277.60</td>
                 <td>$321.82</td>
             </tr>
             <tr>
                 <td>Transaction Costs</td>
-                <td>$119,513.86 (37.17%)</td>
+                <td>$122,483.24 (37.11%)</td>
                 <td>$60,613.88 (29.43%)</td>
             </tr>
         </table>
@@ -450,21 +450,21 @@
             </tr>
             <tr>
                 <td>Rapid Growth</td>
-                <td>4</td>
-                <td>100.00%</td>
+                <td>100</td>
+                <td>99.00%</td>
                 <td>2</td>
                 <td>100.00%</td>
             </tr>
             <tr>
                 <td>Transition</td>
-                <td>3</td>
+                <td>74</td>
                 <td>100.00%</td>
                 <td>1</td>
                 <td>100.00%</td>
             </tr>
             <tr>
                 <td>Stability</td>
-                <td>1,182</td>
+                <td>1,015</td>
                 <td>100.00%</td>
                 <td>637</td>
                 <td>93.41%</td>
@@ -485,21 +485,21 @@
             </tr>
             <tr>
                 <td>1-10</td>
-                <td>55</td>
-                <td>100.00%</td>
+                <td>60</td>
+                <td>98.33%</td>
                 <td>27</td>
                 <td>92.59%</td>
             </tr>
             <tr>
                 <td>10-25</td>
-                <td>81</td>
+                <td>26</td>
                 <td>100.00%</td>
                 <td>87</td>
                 <td>93.10%</td>
             </tr>
             <tr>
                 <td>25-50</td>
-                <td>1,053</td>
+                <td>1,103</td>
                 <td>100.00%</td>
                 <td>526</td>
                 <td>93.54%</td>
@@ -627,7 +627,7 @@
         const equityData = [];
         const labels = [];
 
-        let equity = 1.0;
+        let equity = 100.0;
         for (let i = 0; i < tradeCount; i++) {
             if (i < 100) {
                 equity *= 1.05; // Slower initial growth
@@ -709,7 +709,7 @@
                 datasets: [
                     {
                         label: '1-Minute Timeframe',
-                        data: [100, 95, 90, 85, 92, 88],
+                        data: [99.92, 95, 90, 85, 92, 88],
                         backgroundColor: 'rgba(255, 111, 29, 0.2)',
                         borderColor: '#FF6F1D',
                         borderWidth: 2,
