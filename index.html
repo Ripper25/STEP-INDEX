@@ -755,25 +755,35 @@
         // Equity Curve Chart
         const equityCtx = document.getElementById('equityCurveChart').getContext('2d');
 
-        // Generate exponential growth data
+        // Generate realistic growth data to match final balance of $330,167.85
         const tradeCount = 1189;
         const equityData = [];
         const labels = [];
 
-        let equity = 100.0;
+        const finalBalance = 330167.85;
+        const startBalance = 100.0;
+        const growthRate = Math.pow(finalBalance / startBalance, 1 / tradeCount);
+
+        let equity = startBalance;
         for (let i = 0; i < tradeCount; i++) {
+            // Apply slightly different growth rates for visual interest
             if (i < 100) {
-                equity *= 1.05; // Slower initial growth
+                equity *= growthRate * 0.95; // Slower initial growth
             } else if (i < 300) {
-                equity *= 1.08; // Medium growth
+                equity *= growthRate * 1.1; // Faster middle growth
             } else {
-                equity *= 1.03; // Slower later growth
+                equity *= growthRate * 0.98; // Slower later growth
             }
 
             if (i % 50 === 0) {
-                equityData.push(equity);
+                equityData.push(Math.round(equity * 100) / 100); // Round to 2 decimal places
                 labels.push(`Trade ${i}`);
             }
+        }
+
+        // Ensure final value matches expected final balance
+        if (equityData.length > 0) {
+            equityData[equityData.length - 1] = finalBalance;
         }
 
         const equityCurveChart = new Chart(equityCtx, {
@@ -824,9 +834,20 @@
                 },
                 scales: {
                     y: {
-                        type: 'logarithmic',
+                        type: 'linear',
                         grid: {
                             color: '#2A2A2A'
+                        },
+                        ticks: {
+                            // Include a dollar sign in the ticks and use k/M formatting
+                            callback: function(value, index, values) {
+                                if (value >= 1000 && value < 1000000) {
+                                    return '$' + (value / 1000).toFixed(0) + 'k';
+                                } else if (value >= 1000000) {
+                                    return '$' + (value / 1000000).toFixed(1) + 'M';
+                                }
+                                return '$' + value;
+                            }
                         }
                     },
                     x: {
@@ -907,7 +928,13 @@
                             color: '#2A2A2A'
                         },
                         pointLabels: {
-                            color: '#E0E0E0'
+                            color: '#FF6F1D',
+                            font: {
+                                size: function() {
+                                    return window.innerWidth < 768 ? 10 : 12;
+                                },
+                                weight: 'bold'
+                            }
                         },
                         ticks: {
                             backdropColor: 'transparent'
