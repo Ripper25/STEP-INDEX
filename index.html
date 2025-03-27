@@ -136,16 +136,33 @@
             overflow: hidden;
             -webkit-transform: translate3d(0,0,0);
             transform: translate3d(0,0,0);
+            border: 2px solid var(--quanta-orange);
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .chart-title {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--quanta-orange);
+            z-index: 2;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
 
         canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
             width: 100% !important;
             height: 100% !important;
             -webkit-transform: translate3d(0,0,0);
             transform: translate3d(0,0,0);
+            z-index: 1;
         }
 
         .chart-placeholder {
@@ -263,6 +280,7 @@
                 -webkit-overflow-scrolling: touch;
                 -webkit-backface-visibility: hidden;
                 backface-visibility: hidden;
+                border-width: 1px;
             }
         }
 
@@ -308,6 +326,7 @@
                 perspective: 1000;
                 -webkit-backface-visibility: hidden;
                 backface-visibility: hidden;
+                padding: 8px;
             }
 
             .conclusion {
@@ -417,7 +436,7 @@
         <p>The system's pattern recognition capabilities are particularly effective on the Step Index due to the synthetic instrument's mathematical properties and consistent behavior. The patterns exhibit remarkable reliability, especially in the 1-minute timeframe.</p>
 
         <div class="chart-container">
-            <h3>Pattern Distribution</h3>
+            <div class="chart-title">Pattern Distribution</div>
             <canvas id="patternChart" width="800" height="400"></canvas>
         </div>
 
@@ -454,7 +473,7 @@
         </table>
 
         <div class="chart-container">
-            <h3>Equity Curve</h3>
+            <div class="chart-title">Equity Curve</div>
             <canvas id="equityCurveChart" width="800" height="400"></canvas>
         </div>
 
@@ -529,7 +548,7 @@
         </table>
 
         <div class="chart-container">
-            <h3>Performance Metrics</h3>
+            <div class="chart-title">Performance Metrics</div>
             <canvas id="performanceMetricsChart" width="800" height="400"></canvas>
         </div>
 
@@ -741,11 +760,23 @@
                         beginAtZero: true,
                         grid: {
                             color: '#2A2A2A'
+                        },
+                        ticks: {
+                            color: '#FF6F1D',
+                            font: {
+                                weight: 'bold'
+                            }
                         }
                     },
                     x: {
                         grid: {
                             color: '#2A2A2A'
+                        },
+                        ticks: {
+                            color: '#E0E0E0',
+                            font: {
+                                weight: 'bold'
+                            }
                         }
                     }
                 }
@@ -755,35 +786,25 @@
         // Equity Curve Chart
         const equityCtx = document.getElementById('equityCurveChart').getContext('2d');
 
-        // Generate realistic growth data to match final balance of $330,167.85
+        // Generate exponential growth data
         const tradeCount = 1189;
         const equityData = [];
         const labels = [];
 
-        const finalBalance = 330167.85;
-        const startBalance = 100.0;
-        const growthRate = Math.pow(finalBalance / startBalance, 1 / tradeCount);
-
-        let equity = startBalance;
+        let equity = 100.0;
         for (let i = 0; i < tradeCount; i++) {
-            // Apply slightly different growth rates for visual interest
             if (i < 100) {
-                equity *= growthRate * 0.95; // Slower initial growth
+                equity *= 1.05; // Slower initial growth
             } else if (i < 300) {
-                equity *= growthRate * 1.1; // Faster middle growth
+                equity *= 1.08; // Medium growth
             } else {
-                equity *= growthRate * 0.98; // Slower later growth
+                equity *= 1.03; // Slower later growth
             }
 
             if (i % 50 === 0) {
-                equityData.push(Math.round(equity * 100) / 100); // Round to 2 decimal places
+                equityData.push(equity);
                 labels.push(`Trade ${i}`);
             }
-        }
-
-        // Ensure final value matches expected final balance
-        if (equityData.length > 0) {
-            equityData[equityData.length - 1] = finalBalance;
         }
 
         const equityCurveChart = new Chart(equityCtx, {
@@ -834,25 +855,26 @@
                 },
                 scales: {
                     y: {
-                        type: 'linear',
+                        type: 'logarithmic',
                         grid: {
                             color: '#2A2A2A'
                         },
                         ticks: {
-                            // Include a dollar sign in the ticks and use k/M formatting
-                            callback: function(value, index, values) {
-                                if (value >= 1000 && value < 1000000) {
-                                    return '$' + (value / 1000).toFixed(0) + 'k';
-                                } else if (value >= 1000000) {
-                                    return '$' + (value / 1000000).toFixed(1) + 'M';
-                                }
-                                return '$' + value;
+                            color: '#FF6F1D',
+                            font: {
+                                weight: 'bold'
                             }
                         }
                     },
                     x: {
                         grid: {
                             color: '#2A2A2A'
+                        },
+                        ticks: {
+                            color: '#E0E0E0',
+                            font: {
+                                weight: 'bold'
+                            }
                         }
                     }
                 }
@@ -928,11 +950,9 @@
                             color: '#2A2A2A'
                         },
                         pointLabels: {
-                            color: '#FF6F1D',
+                            color: '#E0E0E0',
                             font: {
-                                size: function() {
-                                    return window.innerWidth < 768 ? 10 : 12;
-                                },
+                                size: 12,
                                 weight: 'bold'
                             }
                         },
