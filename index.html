@@ -131,6 +131,21 @@
             padding: 20px;
             margin: 30px 0;
             text-align: center;
+            position: relative;
+            height: 400px;
+            overflow: hidden;
+            -webkit-transform: translate3d(0,0,0);
+            transform: translate3d(0,0,0);
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+            -webkit-transform: translate3d(0,0,0);
+            transform: translate3d(0,0,0);
         }
 
         .chart-placeholder {
@@ -245,6 +260,9 @@
                 padding: 10px;
                 margin: 20px 0;
                 height: 300px;
+                -webkit-overflow-scrolling: touch;
+                -webkit-backface-visibility: hidden;
+                backface-visibility: hidden;
             }
         }
 
@@ -284,6 +302,12 @@
 
             .chart-container {
                 height: 250px;
+                -webkit-transform: translateZ(0);
+                transform: translateZ(0);
+                -webkit-perspective: 1000;
+                perspective: 1000;
+                -webkit-backface-visibility: hidden;
+                backface-visibility: hidden;
             }
 
             .conclusion {
@@ -540,39 +564,81 @@
         // Mobile detection
         const isMobile = window.innerWidth <= 768;
 
-        // Fix chart rendering issues
+        // Fix chart rendering issues, especially for iOS
         document.addEventListener('DOMContentLoaded', function() {
+            // Detect iOS
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
             // Completely disable Chart.js animations
             Chart.defaults.animation = false;
 
-            // Force hardware acceleration
+            // Force hardware acceleration with iOS-specific fixes
             const style = document.createElement('style');
             style.textContent = `
                 .chart-container {
                     transform: translateZ(0);
+                    -webkit-transform: translateZ(0);
                     backface-visibility: hidden;
+                    -webkit-backface-visibility: hidden;
                     perspective: 1000px;
+                    -webkit-perspective: 1000px;
                     will-change: transform;
                     height: 400px;
                     overflow: hidden;
+                    position: relative !important;
                 }
                 canvas {
                     transform: translateZ(0);
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
+                    -webkit-transform: translateZ(0);
+                    position: absolute !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    width: 100% !important;
+                    height: 100% !important;
+                    max-width: 100% !important;
+                    max-height: 100% !important;
                 }
             `;
             document.head.appendChild(style);
 
-            // Prevent chart redrawing during scroll
+            // iOS-specific fixes
+            if (isIOS) {
+                // Add additional styles for iOS
+                const iosStyle = document.createElement('style');
+                iosStyle.textContent = `
+                    .chart-container {
+                        -webkit-overflow-scrolling: touch;
+                        -webkit-transform: translate3d(0,0,0);
+                        -webkit-backface-visibility: hidden;
+                        -webkit-perspective: 1000;
+                    }
+                    canvas {
+                        -webkit-transform: translate3d(0,0,0);
+                        -webkit-backface-visibility: hidden;
+                        -webkit-perspective: 1000;
+                    }
+                    body * {
+                        -webkit-tap-highlight-color: transparent;
+                    }
+                `;
+                document.head.appendChild(iosStyle);
+
+                // Fix for iOS scrolling issues
+                document.addEventListener('touchmove', function() {}, { passive: true });
+            }
+
+            // Prevent chart redrawing during scroll with improved handling
             let ticking = false;
+            let lastScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
             window.addEventListener('scroll', function() {
-                if (!ticking) {
+                const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const scrollDelta = Math.abs(currentScrollTop - lastScrollTop);
+
+                // Only process if we've scrolled a significant amount
+                if (!ticking && scrollDelta > 5) {
                     window.requestAnimationFrame(function() {
-                        // Hide charts during scroll for better performance
+                        // Freeze charts during fast scrolling
                         const charts = document.querySelectorAll('.chart-container');
                         charts.forEach(chart => {
                             const rect = chart.getBoundingClientRect();
@@ -582,7 +648,14 @@
 
                             // Only render visible charts
                             chart.style.visibility = isVisible ? 'visible' : 'hidden';
+
+                            // Apply additional transform during scroll for iOS
+                            if (isIOS) {
+                                chart.style.webkitTransform = 'translate3d(0,0,0)';
+                            }
                         });
+
+                        lastScrollTop = currentScrollTop;
                         ticking = false;
                     });
                     ticking = true;
@@ -635,6 +708,17 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                devicePixelRatio: 1, // Prevent blurry charts on high-DPI screens
+                animation: false, // Disable animations for better performance
+                hover: {
+                    animationDuration: 0 // Disable hover animations
+                },
+                responsiveAnimationDuration: 0, // Disable responsive animations
+                elements: {
+                    line: {
+                        tension: 0 // Disable bezier curves for better performance
+                    }
+                },
 
                 plugins: {
                     legend: {
@@ -710,6 +794,17 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                devicePixelRatio: 1, // Prevent blurry charts on high-DPI screens
+                animation: false, // Disable animations for better performance
+                hover: {
+                    animationDuration: 0 // Disable hover animations
+                },
+                responsiveAnimationDuration: 0, // Disable responsive animations
+                elements: {
+                    line: {
+                        tension: 0 // Disable bezier curves for better performance
+                    }
+                },
 
                 plugins: {
                     legend: {
@@ -778,6 +873,17 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                devicePixelRatio: 1, // Prevent blurry charts on high-DPI screens
+                animation: false, // Disable animations for better performance
+                hover: {
+                    animationDuration: 0 // Disable hover animations
+                },
+                responsiveAnimationDuration: 0, // Disable responsive animations
+                elements: {
+                    line: {
+                        tension: 0 // Disable bezier curves for better performance
+                    }
+                },
 
                 plugins: {
                     legend: {
